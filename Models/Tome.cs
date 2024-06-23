@@ -7,6 +7,8 @@ public partial class Tome
 {
     public int IdTome { get; set; }
 
+    public int IdSerie { get; set; }
+
     public int? Numero { get; set; }
 
     public string? Titre { get; set; }
@@ -23,11 +25,13 @@ public partial class Tome
 
     public int? IdAuteur { get; set; }
 
-    public int? IdEditeurId { get; set; }
+    public int? IdEditeur { get; set; }
 
     public virtual Auteur? IdAuteurNavigation { get; set; }
 
-    public virtual Editeur? IdEditeur { get; set; }
+    public virtual Editeur? IdEditeurNavigation { get; set; }
+
+    public virtual Serie IdSerieNavigation { get; set; } = null!;
 
     public virtual ICollection<Personnage> PersonnageIdTomeApparitionNavigations { get; set; } = new List<Personnage>();
 

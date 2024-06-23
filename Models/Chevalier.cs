@@ -7,7 +7,7 @@ public partial class Chevalier
 {
     public int IdChevalier { get; set; }
 
-    public int? Generation { get; set; }
+    public int Generation { get; set; }
 
     public virtual Personnage IdChevalierNavigation { get; set; } = null!;
 

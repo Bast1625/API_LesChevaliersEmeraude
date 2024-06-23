@@ -21,7 +21,7 @@ public partial class LesChevaliersEmeraudeContext : DbContext
 
     public virtual DbSet<Editeur> Editeurs { get; set; }
 
-    public virtual DbSet<Pay> Pays { get; set; }
+    public virtual DbSet<Lieu> Lieus { get; set; }
 
     public virtual DbSet<Personnage> Personnages { get; set; }
 
@@ -29,9 +29,14 @@ public partial class LesChevaliersEmeraudeContext : DbContext
 
     public virtual DbSet<Royaute> Royautes { get; set; }
 
+    public virtual DbSet<Serie> Series { get; set; }
+
     public virtual DbSet<Tome> Tomes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=les_chevaliers_emeraude;Username=api_chevaliers_emeraude;Password=Pr*g23BDPGAP!Cheval!ers");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Auteur>(entity =>
@@ -121,15 +126,15 @@ public partial class LesChevaliersEmeraudeContext : DbContext
                 .HasColumnName("nom");
         });
 
-        modelBuilder.Entity<Pay>(entity =>
+        modelBuilder.Entity<Lieu>(entity =>
         {
-            entity.HasKey(e => e.IdPays).HasName("lieu_pkey");
+            entity.HasKey(e => e.IdLieu).HasName("lieu_pkey");
 
-            entity.ToTable("pays", "data");
+            entity.ToTable("lieu", "data");
 
-            entity.Property(e => e.IdPays)
+            entity.Property(e => e.IdLieu)
                 .HasDefaultValueSql("nextval('data.\"royaume_royaumeID_seq\"'::regclass)")
-                .HasColumnName("id_pays");
+                .HasColumnName("id_lieu");
             entity.Property(e => e.Gentile)
                 .HasMaxLength(500)
                 .HasColumnName("gentile");
@@ -147,8 +152,8 @@ public partial class LesChevaliersEmeraudeContext : DbContext
             entity.Property(e => e.IdPersonnage)
                 .HasDefaultValueSql("nextval('data.\"personnage_personnageID_seq\"'::regclass)")
                 .HasColumnName("id_personnage");
-            entity.Property(e => e.IdPaysOrigine).HasColumnName("id_pays_origine");
-            entity.Property(e => e.IdPaysResidence).HasColumnName("id_pays_residence");
+            entity.Property(e => e.IdLieuOrigine).HasColumnName("id_lieu_origine");
+            entity.Property(e => e.IdLieuResidence).HasColumnName("id_lieu_residence");
             entity.Property(e => e.IdTomeApparition).HasColumnName("id_tome_apparition");
             entity.Property(e => e.IdTomeDeces).HasColumnName("id_tome_deces");
             entity.Property(e => e.Nom)
@@ -158,13 +163,13 @@ public partial class LesChevaliersEmeraudeContext : DbContext
                 .HasMaxLength(1)
                 .HasColumnName("sexe");
 
-            entity.HasOne(d => d.IdPaysOrigineNavigation).WithMany(p => p.PersonnageIdPaysOrigineNavigations)
-                .HasForeignKey(d => d.IdPaysOrigine)
-                .HasConstraintName("FK_id_pays_origine");
+            entity.HasOne(d => d.IdLieuOrigineNavigation).WithMany(p => p.PersonnageIdLieuOrigineNavigations)
+                .HasForeignKey(d => d.IdLieuOrigine)
+                .HasConstraintName("FK_id_lieu_origine");
 
-            entity.HasOne(d => d.IdPaysResidenceNavigation).WithMany(p => p.PersonnageIdPaysResidenceNavigations)
-                .HasForeignKey(d => d.IdPaysResidence)
-                .HasConstraintName("FK_id_pays_residence");
+            entity.HasOne(d => d.IdLieuResidenceNavigation).WithMany(p => p.PersonnageIdLieuResidenceNavigations)
+                .HasForeignKey(d => d.IdLieuResidence)
+                .HasConstraintName("FK_id_lieu_residence");
 
             entity.HasOne(d => d.IdTomeApparitionNavigation).WithMany(p => p.PersonnageIdTomeApparitionNavigations)
                 .HasForeignKey(d => d.IdTomeApparition)
@@ -213,18 +218,19 @@ public partial class LesChevaliersEmeraudeContext : DbContext
 
         modelBuilder.Entity<Royaute>(entity =>
         {
-            entity.HasKey(e => new { e.IdPays, e.IdRoyaute1, e.IdRoyaute2 }).HasName("royaute_pkey");
+            entity.HasKey(e => new { e.IdLieu, e.IdRoyaute1, e.IdRoyaute2 }).HasName("royaute_pkey");
 
             entity.ToTable("royaute", "data");
 
-            entity.Property(e => e.IdPays).HasColumnName("id_pays");
+            entity.Property(e => e.IdLieu).HasColumnName("id_lieu");
             entity.Property(e => e.IdRoyaute1).HasColumnName("id_royaute1");
             entity.Property(e => e.IdRoyaute2).HasColumnName("id_royaute2");
+            entity.Property(e => e.SuccessionOrder).HasColumnName("succession_order");
 
-            entity.HasOne(d => d.IdPaysNavigation).WithMany(p => p.Royautes)
-                .HasForeignKey(d => d.IdPays)
+            entity.HasOne(d => d.IdLieuNavigation).WithMany(p => p.Royautes)
+                .HasForeignKey(d => d.IdLieu)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_id_pays");
+                .HasConstraintName("FK_id_lieu");
 
             entity.HasOne(d => d.IdRoyaute1Navigation).WithMany(p => p.RoyauteIdRoyaute1Navigations)
                 .HasForeignKey(d => d.IdRoyaute1)
@@ -235,6 +241,18 @@ public partial class LesChevaliersEmeraudeContext : DbContext
                 .HasForeignKey(d => d.IdRoyaute2)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_id_royaute2");
+        });
+
+        modelBuilder.Entity<Serie>(entity =>
+        {
+            entity.HasKey(e => e.IdSerie).HasName("serie_pkey");
+
+            entity.ToTable("serie", "data");
+
+            entity.Property(e => e.IdSerie).HasColumnName("id_serie");
+            entity.Property(e => e.Titre)
+                .HasMaxLength(500)
+                .HasColumnName("titre");
         });
 
         modelBuilder.Entity<Tome>(entity =>
@@ -248,10 +266,10 @@ public partial class LesChevaliersEmeraudeContext : DbContext
                 .HasColumnName("id_tome");
             entity.Property(e => e.DateParution).HasColumnName("date_parution");
             entity.Property(e => e.IdAuteur).HasColumnName("id_auteur");
-            entity.Property(e => e.IdEditeurId).HasColumnName("id_editeurID");
+            entity.Property(e => e.IdEditeur).HasColumnName("id_editeur");
+            entity.Property(e => e.IdSerie).HasColumnName("id_serie");
             entity.Property(e => e.Isbn)
                 .HasMaxLength(17)
-                .IsFixedLength()
                 .HasColumnName("isbn");
             entity.Property(e => e.LieuParution)
                 .HasMaxLength(500)
@@ -267,11 +285,16 @@ public partial class LesChevaliersEmeraudeContext : DbContext
 
             entity.HasOne(d => d.IdAuteurNavigation).WithMany(p => p.Tomes)
                 .HasForeignKey(d => d.IdAuteur)
-                .HasConstraintName("FK_auteurID");
+                .HasConstraintName("FK_auteur_id");
 
-            entity.HasOne(d => d.IdEditeur).WithMany(p => p.Tomes)
-                .HasForeignKey(d => d.IdEditeurId)
-                .HasConstraintName("FK_editeurID");
+            entity.HasOne(d => d.IdEditeurNavigation).WithMany(p => p.Tomes)
+                .HasForeignKey(d => d.IdEditeur)
+                .HasConstraintName("FK_editeur_id");
+
+            entity.HasOne(d => d.IdSerieNavigation).WithMany(p => p.Tomes)
+                .HasForeignKey(d => d.IdSerie)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_serie_id");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -7,13 +7,13 @@ public partial class Personnage
 {
     public int IdPersonnage { get; set; }
 
-    public string? Nom { get; set; }
+    public string Nom { get; set; } = null!;
 
     public char? Sexe { get; set; }
 
-    public int? IdPaysOrigine { get; set; }
+    public int? IdLieuOrigine { get; set; }
 
-    public int? IdPaysResidence { get; set; }
+    public int? IdLieuResidence { get; set; }
 
     public int? IdTomeApparition { get; set; }
 
@@ -21,9 +21,9 @@ public partial class Personnage
 
     public virtual Chevalier? Chevalier { get; set; }
 
-    public virtual Pay? IdPaysOrigineNavigation { get; set; }
+    public virtual Lieu? IdLieuOrigineNavigation { get; set; }
 
-    public virtual Pay? IdPaysResidenceNavigation { get; set; }
+    public virtual Lieu? IdLieuResidenceNavigation { get; set; }
 
     public virtual Tome? IdTomeApparitionNavigation { get; set; }
 

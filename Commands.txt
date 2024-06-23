@@ -1,0 +1,1 @@
+scaffold-DbContext "Server=localhost;Port=5432;Database=les_chevaliers_emeraude;Username=api_chevaliers_emeraude;Password=Pr*g23BDPGAP!Cheval!ers" Npgsql.EntityFrameworkCore.PostgreSQL -o Models -schema "data" -f
